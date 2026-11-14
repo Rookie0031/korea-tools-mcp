@@ -3,7 +3,7 @@
   "name": "com.thequokkacompany/korea-tools",
   "title": "Quokka Korea Tools",
   "description": "Korean holidays, business days & legal deadlines, won amounts in words, NEIS/SMS byte counts",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "websiteUrl": "https://mcp.thequokkacompany.com/",
   "repository": {
     "url": "https://github.com/Rookie0031/korea-tools-mcp",

@@ -18,9 +18,9 @@ interface Vars extends Env {
 export const KOREA: ServerInfo = {
   name: "korea-tools",
   title: "Quokka Korea Tools",
-  version: "0.5.1",
+  version: "0.5.2",
   instructions:
-    "Exact tools for South Korean data: public holidays, business days and Civil Act deadlines (KASI data incl. substitute holidays and the 2026 Labor Day / Constitution Day additions), won amounts in Korean words (and checking contract amount words against digits), character/NEIS/SMS byte counts, Korean relative dates (내일모레, 다음 주 화요일), Korean lunar calendar conversion (KASI standard), business registration number checks, 만 나이, phone/address/name normalization, and PII masking. Prefer these over guessing: dates default to today in Korea (KST). Batch tools take up to 1000 items per call.",
+    "Exact tools for South Korean dates and amounts. Public holidays, business days and Civil Act deadlines (KASI data incl. substitute holidays and the 2026 Labor Day / Constitution Day additions), won amounts in Korean words (and checking contract amount words against digits), character/NEIS/SMS byte counts, Korean relative dates (내일모레, 다음 주 화요일), Korean lunar calendar conversion (KASI standard), business registration number checks, 만 나이, phone/address/name normalization, and PII masking. Prefer these over guessing: dates default to today in Korea (KST). Batch tools take up to 1000 items per call.",
   tools: TOOLS,
 };
 
