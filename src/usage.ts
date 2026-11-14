@@ -148,6 +148,18 @@ const BOT = /bot|crawl|spider|slurp|preview|fetch|curl|wget|python|go-http|headl
 export function recordPageview(req: Request, path: string, env: Env): Promise<unknown> {
   if (BOT.test(req.headers.get("user-agent") ?? "")) return Promise.resolve();
   return env.DB.prepare("INSERT INTO pages (day, path, ref, views) VALUES (?, ?, ?, 1) ON CONFLICT(day, path, ref) DO UPDATE SET views = views + 1")
-    .bind(kstDay(), path, refFrom(req) ?? "")
+    .bind(kstDay(), path, pageSource(req))
     .run();
+}
+
+/** 페이지 방문 출처: ?ref가 있으면 그 값, 없으면 바깥 Referer 호스트("r:forum.cursor.com"),
+ *  둘 다 없는데 Sec-Fetch-Mode가 없으면 "x:nosf"(브라우저가 아닌 스크립트일 가능성이 큼), 나머지는 "" */
+export function pageSource(req: Request): string {
+  const ref = refFrom(req);
+  if (ref) return ref;
+  try {
+    const host = new URL(req.headers.get("referer") ?? "").hostname;
+    if (host && host !== new URL(req.url).hostname) return `r:${host}`.slice(0, 60);
+  } catch {}
+  return req.headers.get("sec-fetch-mode") ? "" : "x:nosf";
 }

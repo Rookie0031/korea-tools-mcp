@@ -5,6 +5,7 @@ import { toKorean, fromKorean } from "../src/korea/amount";
 import { TOOLS, maskText } from "../src/korea/tools";
 import { handleMcp } from "../src/mcp";
 import { KOREA } from "../src/index";
+import { pageSource } from "../src/usage";
 
 const tool = (n: string) => TOOLS.find((t) => t.name === n)!;
 
@@ -265,4 +266,12 @@ it("금액 검산: 잘못된 짝은 그 항목만 표시", () => {
   const r = tool("kr_amount_check").run({ pairs: [{ korean: "string", number: "string" }, { korean: "만", number: "10000" }] }) as any;
   expect(r.results.map((x: any) => x.match)).toEqual([false, true]);
   expect(r.results[0].note).toMatch(/digits/);
+});
+
+describe("페이지 방문 출처", () => {
+  const at = (h: Record<string, string>, q = "") => new Request(`https://mcp.thequokkacompany.com/${q}`, { headers: h });
+  it("?ref가 먼저", () => expect(pageSource(at({ referer: "https://forum.cursor.com/t/1", "sec-fetch-mode": "navigate" }, "?ref=gn"))).toBe("gn"));
+  it("바깥 Referer 호스트", () => expect(pageSource(at({ referer: "https://forum.cursor.com/t/1", "sec-fetch-mode": "navigate" }))).toBe("r:forum.cursor.com"));
+  it("우리 Referer는 빈 값", () => expect(pageSource(at({ referer: "https://mcp.thequokkacompany.com/ko", "sec-fetch-mode": "navigate" }))).toBe(""));
+  it("Sec-Fetch-Mode 없으면 x:nosf", () => expect(pageSource(at({}))).toBe("x:nosf"));
 });
