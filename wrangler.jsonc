@@ -1,0 +1,18 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	// AI 에이전트 도구 사업부(research/org/AGENT_TOOLS.md). 원격 MCP + HTTP API. workers.dev는 끈다
+	"name": "quokka-agents",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-10-01",
+	"routes": [{ "pattern": "mcp.thequokkacompany.com", "custom_domain": true }],
+	"workers_dev": false,
+	// 정적 파일(og.png·썸네일·아이콘). 경로가 맞으면 Worker 코드 전에 바로 준다. 원본 HTML은 design/, 찍기는 scripts/render-images.sh
+	"assets": { "directory": "./public" },
+	// 호출 수·무료 한도(src/usage.ts). 스키마는 schema.sql
+	"d1_databases": [{ "binding": "DB", "database_name": "quokka-agents", "database_id": "REPLACE_WITH_YOUR_D1_ID" }],
+	// 유료 키(research/agent-tools/PRICING.md). PAID_PRODUCT_IDS가 비어 있으면 키를 받지 않는다(판매 전).
+	// 비밀 값은 wrangler secret: CLIENT_SALT, DODO_API_KEY(유료 판매를 열 때)
+	"vars": { "DODO_ENV": "live", "PAID_PRODUCT_IDS": "", "FREE_DAILY": "200", "PAID_DAILY": "10000" },
+	// 요청 주소에 ?key=가 실릴 수 있어 호출 로그(invocation_logs)는 끄고 console 줄만 남긴다
+	"observability": { "enabled": true, "logs": { "invocation_logs": false } }
+}

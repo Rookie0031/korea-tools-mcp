@@ -1,0 +1,14 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.thequokkacompany/korea-tools",
+  "title": "Quokka Korea Tools",
+  "description": "Korean holidays, business days & legal deadlines, won amounts in words, NEIS/SMS byte counts",
+  "version": "0.5.0",
+  "websiteUrl": "https://mcp.thequokkacompany.com/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.thequokkacompany.com/korea"
+    }
+  ]
+}

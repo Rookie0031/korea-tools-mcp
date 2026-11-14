@@ -1,0 +1,43 @@
+<!doctype html>
+<!-- 프로덕트 이미지·og:image. 1200×630 기준(2배로 찍으면 2400×1260). 결과 값은 모두 실주소 응답 그대로(11/14 확인) -->
+<html lang="ko"><head><meta charset="utf-8">
+<style>
+html,body{margin:0;width:1200px;height:630px;background:#fbfaf7;color:#1d1d1b;font-family:"Apple SD Gothic Neo",-apple-system,sans-serif}
+main{position:absolute;inset:0;padding:44px 52px;display:grid;grid-template-columns:1.12fr 1fr;gap:36px}
+h1{font-size:34px;line-height:1.25;margin:0 0 6px;letter-spacing:-.5px}
+.sub{color:#66645e;font-size:19px;margin:0 0 24px}
+.q{background:#fff;border:1px solid #e4e1d8;border-radius:14px;padding:14px 18px;font-size:20px;margin-bottom:12px}
+.call{font:15px/1.5 ui-monospace,Menlo,monospace;background:#23221f;color:#ecebe6;border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.call b{color:#e2b04a;font-weight:600}
+.res{background:#fff;border:1px solid #e4e1d8;border-radius:14px;padding:14px 18px;font-size:18px;line-height:1.75}
+.res .x{color:#c8412f;font-weight:700}
+.res .ok{font-size:22px;font-weight:800;margin-top:4px}
+.side{display:flex;flex-direction:column;gap:12px;padding-top:4px}
+.row{background:#f1eee6;border-radius:12px;padding:12px 16px}
+.row .k{font-size:15px;color:#66645e;margin-bottom:2px}
+.row .v{font-size:19px;font-weight:700}
+.cmd{font:14px/1.45 ui-monospace,Menlo,monospace;background:#23221f;color:#ecebe6;border-radius:12px;padding:12px 14px;margin-top:8px}
+.foot{position:absolute;left:52px;bottom:18px;font-size:15px;color:#66645e}
+</style></head><body>
+<main>
+  <section>
+    <h1>한국 날짜·금액을 추측하지 않고 계산하는 MCP 서버</h1>
+    <p class="sub">Claude·Cursor가 이 도구를 불러 답을 확인합니다</p>
+    <div class="q">4월 17일에 받은 통지, 14일 기한이 언제야?</div>
+    <div class="call"><b>kr_legal_deadline</b> {"event_date":"2026-04-17", "amount":14, "unit":"day"}</div>
+    <div class="res">
+      첫날 빼고 세면 말일 2026-05-01 <span class="x">노동절</span><br>
+      05-02 <span class="x">토</span> · 05-03 <span class="x">일</span> → 다음 날로 연장 (민법 161조)<br>
+      <div class="ok">기한 2026-05-04 (월)</div>
+    </div>
+  </section>
+  <section class="side">
+    <div class="row"><div class="k">kr_lunar_convert · 음력 2027-01-01</div><div class="v">2027-02-07 (중국 음력은 2/6)</div></div>
+    <div class="row"><div class="k">kr_amount_to_korean · 1234567</div><div class="v">일금 일백이십삼만사천오백육십칠원정</div></div>
+    <div class="row"><div class="k">kr_relative_date · 기준 11/12(목)</div><div class="v">"다음 주 화요일" → 2026-11-17</div></div>
+    <div class="row"><div class="k">kr_text_count · 안녕하세요 반갑습니다</div><div class="v">공백 포함 11자 · 나이스 31바이트</div></div>
+    <div class="cmd">claude mcp add --transport http korea-tools<br>https://mcp.thequokkacompany.com/korea</div>
+  </section>
+</main>
+<div class="foot">mcp.thequokkacompany.com · 도구 16개 · 키 없이 하루 200회</div>
+</body></html>
