@@ -5,7 +5,7 @@
 
 import { handleMcp, type ServerInfo } from "./mcp";
 import { TOOLS, isUserError } from "./korea/tools";
-import { checkQuota, identify, recordCall, recordClient, recordPageview, refFrom, type Env, type Caller } from "./usage";
+import { checkQuota, identify, recordCall, recordCaller, recordClient, recordPageview, refFrom, type Env, type Caller } from "./usage";
 import { landing, landingKo, llmsTxt, openapi, sitemap, guide, GUIDE_PATH, deadlinesGuide, DEADLINES_PATH } from "./pages";
 
 /** IndexNow 키(공개 값). /<키>.txt로 같은 값을 돌려준다(SEO·AEO팀이 제출) */
@@ -24,11 +24,12 @@ export const KOREA: ServerInfo = {
   tools: TOOLS,
 };
 
-function hooks(caller: Caller, env: Env, ctx: ExecutionContext, ref: string | null = null) {
+function hooks(caller: Caller, env: Env, ctx: ExecutionContext, ref: string | null = null, seen?: { via: "mcp" | "api"; req: Request }) {
   return {
     beforeCall: () => checkQuota(caller, KOREA.name, env),
     afterCall: (tool: string, ok: boolean, ms: number) => {
       ctx.waitUntil(recordCall(caller, KOREA.name, tool, ok, ref, env).catch((e) => console.error("usage write", String(e))));
+      if (seen) ctx.waitUntil(recordCaller(caller, KOREA.name, seen.via, seen.req, env).catch(() => {}));
       console.log(JSON.stringify({ call: tool, server: KOREA.name, tier: caller.kind, ok, ms, ref }));
     },
     onInitialize: (app: string, version: string, protocol: string) => {
@@ -52,7 +53,7 @@ export default {
       if (req.method === "GET" && !(req.headers.get("accept") ?? "").includes("text/event-stream")) return Response.redirect(`${url.origin}/#korea`, 302);
       if (req.method !== "POST") return handleMcp(req, KOREA, hooks({ kind: "free", id: "-" }, env, ctx));
       const caller = await identify(req, env);
-      return handleMcp(req, KOREA, hooks(caller, env, ctx, refFrom(req)));
+      return handleMcp(req, KOREA, hooks(caller, env, ctx, refFrom(req), { via: "mcp", req }));
     }
 
     const api = /^\/api\/korea\/([a-z_]+)$/.exec(path);
@@ -71,7 +72,7 @@ export default {
       } catch {
         return Response.json({ error: "body must be JSON" }, { status: 400, headers: cors });
       }
-      const h = hooks(caller, env, ctx, refFrom(req));
+      const h = hooks(caller, env, ctx, refFrom(req), { via: "api", req });
       const t0 = Date.now();
       try {
         const out = await tool.run(args ?? {});

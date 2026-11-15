@@ -5,7 +5,7 @@ import { toKorean, fromKorean } from "../src/korea/amount";
 import { TOOLS, maskText } from "../src/korea/tools";
 import { handleMcp } from "../src/mcp";
 import { KOREA } from "../src/index";
-import { pageSource } from "../src/usage";
+import { pageSource, uaLabel } from "../src/usage";
 import { deadlinesGuide, sitemap } from "../src/pages";
 
 const tool = (n: string) => TOOLS.find((t) => t.name === n)!;
@@ -288,4 +288,16 @@ describe("페이지 방문 출처", () => {
   it("바깥 Referer 호스트", () => expect(pageSource(at({ referer: "https://forum.cursor.com/t/1", "sec-fetch-mode": "navigate" }))).toBe("r:forum.cursor.com"));
   it("우리 Referer는 빈 값", () => expect(pageSource(at({ referer: "https://mcp.thequokkacompany.com/ko", "sec-fetch-mode": "navigate" }))).toBe(""));
   it("Sec-Fetch-Mode 없으면 x:nosf", () => expect(pageSource(at({}))).toBe("x:nosf"));
+});
+
+describe("도구 호출 UA 이름", () => {
+  it("알려진 제품 이름", () => {
+    expect(uaLabel("curl/8.7.1")).toBe("curl");
+    expect(uaLabel("python-httpx/0.27.0")).toBe("python-httpx");
+    expect(uaLabel("Mozilla/5.0 AppleWebKit/537.36; compatible; ChatGPT-User/1.0")).toBe("chatgpt-user");
+  });
+  it("모르면 첫 토큰, 비면 -", () => {
+    expect(uaLabel("Mozilla/5.0 (Macintosh)")).toBe("mozilla");
+    expect(uaLabel("")).toBe("-");
+  });
 });

@@ -1,7 +1,7 @@
 // 호출 수 세기·무료 한도·유료 키. 설계: research/agent-tools/PRICING.md
 // - 키 없이: 클라이언트(IP+User-Agent를 비밀 소금으로 해시한 16자) 하나당 한국 날짜 하루 FREE_DAILY회.
 // - 유료 키: Dodo 라이선스 키를 API 키로 쓴다(Authorization: Bearer <키> 또는 ?key=<키>). 키 하나당 하루 PAID_DAILY회.
-// IP·키 원문·도구 입력값은 저장하지 않는다. D1에는 해시와 날짜별 횟수만 남는다.
+// IP·키 원문·도구 입력값은 저장하지 않는다. D1에는 해시와 날짜별 횟수, UA 제품 이름(callers)만 남는다.
 
 export interface Env {
   DB: D1Database;
@@ -140,6 +140,19 @@ export function recordCall(c: Caller, server: string, tool: string, ok: boolean,
 export function recordClient(c: Caller, server: string, app: string, version: string, protocol: string, ref: string | null, env: Env): Promise<unknown> {
   return env.DB.prepare("INSERT OR IGNORE INTO clients (day, server, client, app, version, protocol, ref) VALUES (?, ?, ?, ?, ?, ?, ?)")
     .bind(kstDay(), server, c.id, app, version, protocol, ref)
+    .run();
+}
+
+/** 도구를 부른 클라이언트의 경로(mcp|api)와 User-Agent 제품 이름만 하루 한 줄. IP·UA 원문은 남기지 않는다(11/15 추가:
+ *  initialize 없이 도구만 부른 클라이언트가 사람인지 스크립트인지 가리려고) */
+export function uaLabel(ua: string): string {
+  const m = /chatgpt-user|openai|claude|anthropic|undici|node|python[\w.-]*|curl|go-http-client|okhttp|axios|java|deno|bun/i.exec(ua);
+  return (m ? m[0] : ua.split(/[\/\s]/)[0] || "-").toLowerCase().slice(0, 30);
+}
+
+export function recordCaller(c: Caller, server: string, via: "mcp" | "api", req: Request, env: Env): Promise<unknown> {
+  return env.DB.prepare("INSERT OR IGNORE INTO callers (day, server, client, via, ua) VALUES (?, ?, ?, ?, ?)")
+    .bind(kstDay(), server, c.id, via, uaLabel(req.headers.get("user-agent") ?? ""))
     .run();
 }
 

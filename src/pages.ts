@@ -128,7 +128,7 @@ ${CURL}
 </ul>
 
 <h2>Privacy</h2>
-<p>Tool inputs are not stored or logged. For the daily limit we keep a salted hash of IP address and User-Agent, the tool name and a count per day. Nothing is sold or shared.</p>
+<p>Tool inputs are not stored or logged. For the daily limit we keep a salted hash of IP address and User-Agent, the tool name, a count per day, and the product name at the start of the User-Agent (for example <code>curl</code>). Nothing is sold or shared.</p>
 
 <p class="mute" style="margin-top:48px">Made by The Quokka Studio · <a href="mailto:contact@thequokkacompany.com">contact@thequokkacompany.com</a></p>
 </main></body></html>`;
@@ -169,7 +169,7 @@ ${CURL}
 </ul>
 
 <h2>개인정보</h2>
-<p>도구에 넣은 값은 저장하거나 로그에 남기지 않습니다. 하루 한도를 세려고 IP 주소와 User-Agent를 비밀 값으로 해시한 문자열, 도구 이름, 날짜별 횟수만 둡니다.</p>
+<p>도구에 넣은 값은 저장하거나 로그에 남기지 않습니다. 하루 한도를 세려고 IP 주소와 User-Agent를 비밀 값으로 해시한 문자열, 도구 이름, 날짜별 횟수, User-Agent 앞의 제품 이름(예: <code>curl</code>)만 둡니다.</p>
 
 <p class="mute" style="margin-top:48px">더쿼카스튜디오 · <a href="mailto:contact@thequokkacompany.com">contact@thequokkacompany.com</a></p>
 </main></body></html>`;

@@ -53,7 +53,7 @@ Phone, address, name, age and mask rules are in `src/lib` (the same code as the 
 Usage counting and limits: `src/usage.ts`, D1 schema `schema.sql`.
 
 ## Privacy
-Tool arguments are not logged. To apply the daily limit the server keeps a per-day call count for each client, keyed by a salted hash of IP and user agent, plus the client name and version from `initialize` and the `ref` value if the URL has one.
+Tool arguments are not logged. To apply the daily limit the server keeps a per-day call count for each client, keyed by a salted hash of IP and user agent, plus the client name and version from `initialize`, the product name from the User-Agent (such as `curl`), and the `ref` value if the URL has one.
 
 ## Data and license
 Holiday data: Korea Astronomy and Space Science Institute (KASI) special-day data via [hyunbinseo/holidays-kr](https://github.com/hyunbinseo/holidays-kr) (MIT). Lunar conversion: [korean-lunar-calendar](https://www.npmjs.com/package/korean-lunar-calendar) (MIT). Code: MIT, see `LICENSE`.

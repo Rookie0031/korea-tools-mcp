@@ -34,3 +34,11 @@ CREATE TABLE IF NOT EXISTS pages (
   views INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (day, path, ref)
 );
+CREATE TABLE IF NOT EXISTS callers (
+  day TEXT NOT NULL,
+  server TEXT NOT NULL,
+  client TEXT NOT NULL,
+  via TEXT NOT NULL,      -- mcp | api
+  ua TEXT NOT NULL,       -- User-Agent 제품 이름만(curl, node, python-httpx, mozilla …), 11/15 추가
+  PRIMARY KEY (day, server, client, via, ua)
+);
