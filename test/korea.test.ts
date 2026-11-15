@@ -6,6 +6,7 @@ import { TOOLS, maskText } from "../src/korea/tools";
 import { handleMcp } from "../src/mcp";
 import { KOREA } from "../src/index";
 import { pageSource } from "../src/usage";
+import { deadlinesGuide, sitemap } from "../src/pages";
 
 const tool = (n: string) => TOOLS.find((t) => t.name === n)!;
 
@@ -153,6 +154,19 @@ describe("민법 기간", () => {
   });
   it("0시 시작이면 첫날 산입", () => {
     expect(dl("2026-06-01", 10, "day", true).nominal_last_day).toBe("2026-06-10");
+  });
+  it("안내 페이지(/guides/korean-legal-deadlines)의 예와 도구 결과가 같다", () => {
+    const page = deadlinesGuide();
+    const cases: [string, number, "day" | "week" | "month" | "year", boolean][] = [
+      ["2026-07-10", 7, "day", false],
+      ["2026-09-10", 2, "week", false],
+      ["2026-11-30", 3, "month", false],
+      ["2026-10-10", 1, "year", false],
+      ["2026-12-01", 1, "month", true],
+      ["2026-12-01", 1, "month", false],
+    ];
+    for (const [e, n, u, mid] of cases) expect(page).toContain(`deadline: "${dl(e, n, u, mid).deadline}"`);
+    expect(sitemap()).toContain("/guides/korean-legal-deadlines");
   });
 });
 

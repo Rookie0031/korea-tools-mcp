@@ -6,7 +6,7 @@
 import { handleMcp, type ServerInfo } from "./mcp";
 import { TOOLS, isUserError } from "./korea/tools";
 import { checkQuota, identify, recordCall, recordClient, recordPageview, refFrom, type Env, type Caller } from "./usage";
-import { landing, landingKo, llmsTxt, openapi, sitemap, guide, GUIDE_PATH } from "./pages";
+import { landing, landingKo, llmsTxt, openapi, sitemap, guide, GUIDE_PATH, deadlinesGuide, DEADLINES_PATH } from "./pages";
 
 /** IndexNow 키(공개 값). /<키>.txt로 같은 값을 돌려준다(SEO·AEO팀이 제출) */
 const INDEXNOW_KEY = "769da9e03d4282c2b64123b3fd55a3c8"; // gitleaks:allow (공개 값)
@@ -85,13 +85,15 @@ export default {
     }
 
     // 사람이 보는 페이지 방문을 ref별로 센다(봇 UA는 빼고). IP·UA는 남기지 않는다
-    if (req.method === "GET" && (path === "/" || path === "/ko" || path === GUIDE_PATH)) {
+    if (req.method === "GET" && (path === "/" || path === "/ko" || path === GUIDE_PATH || path === DEADLINES_PATH)) {
       ctx.waitUntil(recordPageview(req, path, env).catch(() => {}));
     }
 
     switch (path) {
       case GUIDE_PATH:
         return TEXT(guide(), "text/html");
+      case DEADLINES_PATH:
+        return TEXT(deadlinesGuide(), "text/html");
       case "/":
         return TEXT(landing(KOREA), "text/html");
       case "/ko":

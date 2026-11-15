@@ -8,7 +8,7 @@ import { COVER } from "./korea/tools";
 
 const ORIGIN = "https://mcp.thequokkacompany.com";
 /** 페이지 글을 고친 날. sitemap lastmod */
-export const PAGES_UPDATED = "2026-11-14";
+export const PAGES_UPDATED = "2026-11-15";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const KO: Record<string, string> = {
@@ -235,6 +235,87 @@ export function guide(): string {
 
 <h2>Other tools on the same server</h2>
 <p>Korean lunar calendar conversion (2027 Lunar New Year is Feb 7 in Korea and Feb 6 in China), phrases like "다음 주 화요일" to dates, won amounts in Korean words, character and NEIS byte counts, business registration number check digits, and phone/address/name cleanup. Full list: <a href="/">home</a>, <a href="/openapi.json">OpenAPI</a>, <a href="/llms.txt">llms.txt</a>.</p>
+<p>More on Civil Act periods (weeks, years, periods that start at 00:00): <a href="${DEADLINES_PATH}">Korean legal deadlines guide</a>.</p>
+
+<p class="mute" style="margin-top:48px">The Quokka Studio · <a href="mailto:contact@thequokkacompany.com">contact@thequokkacompany.com</a></p>
+</main></body></html>`;
+}
+
+export const DEADLINES_PATH = "/guides/korean-legal-deadlines";
+
+/** 두 번째 사용 사례: 민법 기간 계산. 결과 값은 실주소 응답 그대로(11/15, /api/korea/kr_legal_deadline) */
+export function deadlinesGuide(): string {
+  const url = `${ORIGIN}/korea?ref=deadlines`;
+  return `${head("en", "Korean legal deadlines (Civil Act periods) for Claude and Cursor | Quokka Korea Tools", "How Korea's Civil Act counts days, weeks, months and years, with real results for periods that cross Constitution Day, Chuseok, month ends and New Year. One MCP URL, free tier without a key.", DEADLINES_PATH, false)}
+<nav><a href="/">Quokka Korea Tools</a> · <a href="${GUIDE_PATH}">Business days guide</a></nav>
+<h1>Korean legal deadlines: how "within 7 days" and "within 1 month" are counted</h1>
+<p class="mute">Updated 2026-11-15. Every result below is the server's actual response.</p>
+
+<p>Korean notices, contracts and statutes give periods like "수령일로부터 7일 이내" (within 7 days of receipt) or "통지 후 1개월". Unless the law or the contract sets its own rule, the Civil Act (민법, articles 155-161) decides where such a period ends. Four rules decide the answer:</p>
+<ul>
+<li>The day of the event is not counted. Counting starts the next day (art. 157). If the period starts at 00:00, for example a term fixed in advance to begin on a date, the first day does count.</li>
+<li>Weeks, months and years follow the calendar, not a number of days. The period ends the day before the corresponding day: the same weekday for weeks, the same date for months and years. If that date does not exist, it ends on the last day of that month (art. 160).</li>
+<li>If the last day is a Saturday or a public holiday, the period ends the following day (art. 161). Sundays are public holidays under the government holiday regulations.</li>
+<li>The period ends when the last day ends, at 24:00 (art. 159).</li>
+</ul>
+<p>So the answer depends on the holiday list for that year. Labor Day (May 1) and Constitution Day (July 17) became public holidays in 2026, and substitute holidays and election days change from year to year.</p>
+
+<h2>Set it up</h2>
+<p>Claude Code</p>
+<pre>claude mcp add --transport http korea-tools "${url}"</pre>
+<p>Cursor (<code>.cursor/mcp.json</code>)</p>
+<pre>{ "mcpServers": { "korea-tools": { "type": "http", "url": "${url}" } } }</pre>
+<p>Without MCP, the same tool is a plain HTTP call:</p>
+<pre>curl -s ${ORIGIN}/api/korea/kr_legal_deadline \\
+  -H 'content-type: application/json' \\
+  -d '{"event_date":"2026-07-10","amount":7,"unit":"day"}'</pre>
+<p class="mute"><code>?ref=deadlines</code> only tells us which page you came from. The server works the same without it. No account or key for up to 200 calls a day.</p>
+
+<h2>1. Seven days that end on Constitution Day</h2>
+<p>Prompt: <em>A notice arrived on 2026-07-10. When does a 7-day period end?</em></p>
+<pre>kr_legal_deadline {"event_date": "2026-07-10", "amount": 7, "unit": "day"}
+→ first_day_counted: "2026-07-11", nominal_last_day: "2026-07-17"
+  deadline: "2026-07-20" (Monday)
+  extended over: 07-17 제헌절, 07-18 Saturday, 07-19 Sunday</pre>
+<p>Counting starts July 11, so day 7 is Friday, July 17. July 17 was not a public holiday from 2008 to 2025, so older calendars show it as a working day. In 2026 it is a holiday and the weekend follows, so the deadline is Monday, July 20.</p>
+
+<h2>2. Two weeks into Chuseok</h2>
+<pre>kr_legal_deadline {"event_date": "2026-09-10", "amount": 2, "unit": "week"}
+→ nominal_last_day: "2026-09-24", deadline: "2026-09-28" (Monday)
+  extended over: 09-24 추석 전날, 09-25 추석, 09-26 추석 다음 날, 09-27 Sunday</pre>
+<p>Two weeks counted from September 11 end on Thursday, September 24, the first of the three Chuseok days. With the Sunday after it, the deadline moves four days to Monday, September 28.</p>
+
+<h2>3. Three months from the end of November</h2>
+<pre>kr_legal_deadline {"event_date": "2026-11-30", "amount": 3, "unit": "month"}
+→ first_day_counted: "2026-12-01", nominal_last_day: "2027-02-28"
+  deadline: "2027-03-02" (Tuesday)
+  extended over: 02-28 Sunday, 03-01 3ㆍ1절</pre>
+<p>Counting starts December 1, so three months run through the end of February. February 28, 2027 is a Sunday and March 1 is Independence Movement Day, so the deadline is Tuesday, March 2.</p>
+
+<h2>4. One year that ends on a substitute holiday</h2>
+<pre>kr_legal_deadline {"event_date": "2026-10-10", "amount": 1, "unit": "year"}
+→ nominal_last_day: "2027-10-10", deadline: "2027-10-12" (Tuesday)
+  extended over: 10-10 Sunday, 10-11 대체공휴일(한글날)</pre>
+<p>The nominal last day, October 10, 2027, is a Sunday. Hangul Day (October 9) falls on a Saturday that year, so Monday the 11th is its substitute holiday and the deadline is Tuesday, October 12.</p>
+
+<h2>5. Same date, two answers: does the period start at 00:00?</h2>
+<p>A one-month term that begins on December 1 by agreement (it starts at 00:00, so December 1 counts):</p>
+<pre>kr_legal_deadline {"event_date": "2026-12-01", "amount": 1, "unit": "month", "starts_at_midnight": true}
+→ first_day_counted: "2026-12-01", deadline: "2026-12-31" (Thursday)</pre>
+<p>A one-month period counted from a notice received on December 1:</p>
+<pre>kr_legal_deadline {"event_date": "2026-12-01", "amount": 1, "unit": "month"}
+→ first_day_counted: "2026-12-02", nominal_last_day: "2027-01-01"
+  deadline: "2027-01-04" (Monday)
+  extended over: 01-01 1월 1일, 01-02 Saturday, 01-03 Sunday</pre>
+<p>Which case applies depends on the document. The agent has to read that from the text and pass <code>starts_at_midnight</code>. The tool does not guess it.</p>
+
+<h2>What it does not do</h2>
+<ul>
+<li>It applies the Civil Act default. Some statutes set their own rules. The Criminal Procedure Act (art. 66), for one, counts the first day of prescription and detention periods. The result is not legal advice.</li>
+<li>Holiday data covers 2024-2027 (Korea Astronomy and Space Science Institute data). A deadline that ends outside those years returns an error.</li>
+<li>Company holidays are not known to it. Pass them as <code>extra_closed_dates</code> if a contract counts only working days.</li>
+<li>It counts calendar periods. For "3 business days" use <code>kr_add_business_days</code> (<a href="${GUIDE_PATH}">business days guide</a>).</li>
+</ul>
 
 <p class="mute" style="margin-top:48px">The Quokka Studio · <a href="mailto:contact@thequokkacompany.com">contact@thequokkacompany.com</a></p>
 </main></body></html>`;
@@ -257,6 +338,7 @@ Free tier: 200 calls per day per client. Errors come back as {"error": "..."} (H
 - [Home](${ORIGIN}/): setup for Claude Code, Claude.ai, Cursor, VS Code
 - [한국어 안내](${ORIGIN}/ko): 설정 방법과 도구 목록
 - [Guide: Korean business days and legal deadlines](${ORIGIN}${GUIDE_PATH}): worked examples with real outputs
+- [Guide: Korean legal deadlines (Civil Act periods)](${ORIGIN}${DEADLINES_PATH}): days, weeks, months, years, periods starting at 00:00
 - [OpenAPI](${ORIGIN}/openapi.json): HTTP API schema for every tool
 - [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=com.thequokkacompany/korea-tools): com.thequokkacompany/korea-tools
 
@@ -279,7 +361,7 @@ export function sitemap(): string {
       alt ? `<xhtml:link rel="alternate" hreflang="en" href="${ORIGIN}/"/><xhtml:link rel="alternate" hreflang="ko" href="${ORIGIN}/ko"/>` : ""
     }</url>`;
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${url("/")}${url("/ko")}${url(GUIDE_PATH, false)}${url("/llms.txt", false)}</urlset>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${url("/")}${url("/ko")}${url(GUIDE_PATH, false)}${url(DEADLINES_PATH, false)}${url("/llms.txt", false)}</urlset>
 `;
 }
 
