@@ -254,7 +254,7 @@ export function deadlinesGuide(): string {
 <p>Korean notices, contracts and statutes give periods like "수령일로부터 7일 이내" (within 7 days of receipt) or "통지 후 1개월". Unless the law or the contract sets its own rule, the Civil Act (민법, articles 155-161) decides where such a period ends. Four rules decide the answer:</p>
 <ul>
 <li>The day of the event is not counted. Counting starts the next day (art. 157). If the period starts at 00:00, for example a term fixed in advance to begin on a date, the first day does count.</li>
-<li>Weeks, months and years follow the calendar, not a number of days. The period ends the day before the corresponding day: the same weekday for weeks, the same date for months and years. If that date does not exist, it ends on the last day of that month (art. 160).</li>
+<li>Weeks, months and years follow the calendar, not a number of days. The period ends the day before the day that corresponds to the first counted day: the same weekday for weeks, the same date for months and years. If that date does not exist, it ends on the last day of that month (art. 160).</li>
 <li>If the last day is a Saturday or a public holiday, the period ends the following day (art. 161). Sundays are public holidays under the government holiday regulations.</li>
 <li>The period ends when the last day ends, at 24:00 (art. 159).</li>
 </ul>
