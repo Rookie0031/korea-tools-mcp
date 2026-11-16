@@ -49,8 +49,8 @@ export default {
     const path = url.pathname.replace(/\/+$/, "") || "/";
 
     if (path === "/korea" || path === "/korea/mcp" || path === "/mcp") {
-      // 사람·크롤러가 열면 설명 페이지로. SSE 스트림을 바라는 MCP 클라이언트(GET + text/event-stream)만 405
-      if (req.method === "GET" && !(req.headers.get("accept") ?? "").includes("text/event-stream")) return Response.redirect(`${url.origin}/#korea`, 302);
+      // 사람·크롤러가 열면 설명 페이지로(?ref는 페이지 방문 집계에 남도록 그대로 넘김). SSE 스트림을 바라는 MCP 클라이언트(GET + text/event-stream)만 405
+      if (req.method === "GET" && !(req.headers.get("accept") ?? "").includes("text/event-stream")) return Response.redirect(`${url.origin}/${url.search}#korea`, 302);
       if (req.method !== "POST") return handleMcp(req, KOREA, hooks({ kind: "free", id: "-" }, env, ctx));
       const caller = await identify(req, env);
       return handleMcp(req, KOREA, hooks(caller, env, ctx, refFrom(req), { via: "mcp", req }));

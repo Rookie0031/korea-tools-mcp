@@ -4,7 +4,7 @@ import { addBusinessDays, countBusinessDays, dayInfo, holidaysBetween, todayKst 
 import { toKorean, fromKorean } from "../src/korea/amount";
 import { TOOLS, maskText } from "../src/korea/tools";
 import { handleMcp } from "../src/mcp";
-import { KOREA } from "../src/index";
+import worker, { KOREA } from "../src/index";
 import { pageSource, uaLabel } from "../src/usage";
 import { deadlinesGuide, sitemap } from "../src/pages";
 
@@ -299,5 +299,17 @@ describe("도구 호출 UA 이름", () => {
   it("모르면 첫 토큰, 비면 -", () => {
     expect(uaLabel("Mozilla/5.0 (Macintosh)")).toBe("mozilla");
     expect(uaLabel("")).toBe("-");
+  });
+});
+
+describe("브라우저로 연 MCP 주소", () => {
+  it("?ref를 붙인 채 설명 페이지로 보낸다", async () => {
+    const r = await worker.fetch(new Request("https://mcp.thequokkacompany.com/korea?ref=mail-mcpnl"), {} as any, {} as any);
+    expect(r.status).toBe(302);
+    expect(r.headers.get("location")).toBe("https://mcp.thequokkacompany.com/?ref=mail-mcpnl#korea");
+  });
+  it("ref가 없으면 그대로", async () => {
+    const r = await worker.fetch(new Request("https://mcp.thequokkacompany.com/korea"), {} as any, {} as any);
+    expect(r.headers.get("location")).toBe("https://mcp.thequokkacompany.com/#korea");
   });
 });
